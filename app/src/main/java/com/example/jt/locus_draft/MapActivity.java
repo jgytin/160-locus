@@ -1,6 +1,7 @@
 package com.example.jt.locus_draft;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteAccessPermException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,48 +23,31 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 
 public class MapActivity extends AppCompatActivity
-        implements MainFragment.OnFragmentInteractionListener, SavedFragment.OnFragmentInteractionListener,  OnMapReadyCallback {
+        implements MainFragment.OnFragmentInteractionListener, SavedFragment.OnFragmentInteractionListener {
 
     private TextView mTextMessage;
-
-    private GoogleMap mMap;
-
-    private OnMapReadyCallback mCallback;
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        // Add a marker in Sydney, Australia, and move the camera.
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-    }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Fragment selectedFragment = null;
+            Fragment selectedFragment;
             switch (item.getItemId()) {
                 case R.id.navigation_map:
 //                    mTextMessage.setText(R.string.title_home);
                     selectedFragment = MainFragment.newInstance();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment).commit();
+                    break;
                 case R.id.navigation_saved:
 //                    mTextMessage.setText(R.string.title_dashboard);
-                    selectedFragment = SavedFragment.newInstance("arg1", "arg2");
+                    selectedFragment = SavedFragment.newInstance("a", "b");
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment).commit();
+                    break;
                 case R.id.navigation_grid:
 //                    mTextMessage.setText(R.string.title_notifications);
             }
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.frame_layout, selectedFragment);
-            transaction.commit();
-            if (item.getItemId() == R.id.navigation_map) {
-                SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                        .findFragmentById(R.id.map);
-                mapFragment.getMapAsync(mCallback);
-            }
+
             return false;
         }
     };
@@ -73,12 +57,12 @@ public class MapActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_activity);
 
-        mCallback = this;
-
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        //set frame layout to map fragment
+        getSupportFragmentManager().beginTransaction().add(R.id.frame_layout, MainFragment.newInstance()).commit();
 
     }
 

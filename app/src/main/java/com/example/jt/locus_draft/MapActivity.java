@@ -23,7 +23,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 
 public class MapActivity extends AppCompatActivity
-        implements MainFragment.OnFragmentInteractionListener, SavedFragment.OnFragmentInteractionListener {
+        implements MainFragment.OnFragmentInteractionListener,
+        SavedFragment.OnFragmentInteractionListener,
+        GridFragment.OnFragmentInteractionListener {
 
     private TextView mTextMessage;
 
@@ -46,6 +48,8 @@ public class MapActivity extends AppCompatActivity
                     break;
                 case R.id.navigation_grid:
 //                    mTextMessage.setText(R.string.title_notifications);
+                    selectedFragment = GridFragment.newInstance();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment).commit();
             }
 
             return false;

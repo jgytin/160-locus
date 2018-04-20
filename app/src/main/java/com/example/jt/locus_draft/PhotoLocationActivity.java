@@ -27,13 +27,12 @@ public class PhotoLocationActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         setPhotos();
-
         setAdapterAndUpdateData();
     }
 
     // add some default photos for now
     private void setPhotos() {
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 9; i++) {
             mPhotos.add(new Photo());
         }
     }

@@ -4,9 +4,15 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
+
+import java.util.ArrayList;
 
 
 /**
@@ -26,6 +32,11 @@ public class SavedFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private ArrayList<Saved> mSaved;
+    private FrameLayout layout;
 
     private OnFragmentInteractionListener mListener;
 
@@ -64,7 +75,22 @@ public class SavedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_saved, container, false);
+        View view = inflater.inflate(R.layout.fragment_saved, container, false);
+
+        layout = (FrameLayout) view.findViewById(R.id.layout);
+
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.saved);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        mSaved = new ArrayList<Saved>();
+        mSaved.add(new Saved("saved place 1", "."));
+        mSaved.add(new Saved("saved place 2", "."));
+        mSaved.add(new Saved("ayee it works", "."));
+        mAdapter = new SavedAdapter(getActivity(), mSaved, mRecyclerView);
+        mRecyclerView.setAdapter(mAdapter);
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -105,4 +131,17 @@ public class SavedFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+}
+
+
+class Saved {
+
+    public String name;
+    public String imagePath;
+
+    Saved(String name, String imagePath) {
+        this.name = name;
+        this.imagePath = imagePath;
+    }
+
 }

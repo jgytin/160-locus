@@ -1,6 +1,8 @@
 package com.example.jt.locus_draft;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,8 +16,12 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.Random;
 
 
 /**
@@ -59,6 +65,41 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         mMap.getUiSettings().setZoomControlsEnabled( true );
+
+        setTestCircles();
+    }
+
+    private void setTestCircles() {
+        Random rand = new Random();
+
+        Circle circle;
+        for (int i = 0; i < 30; i++) {
+            double latOffset = ((double) ((rand.nextInt(1000) - 500))) / 10000.0;
+            double lngOffset = ((double) ((rand.nextInt(1000) - 500))) / 10000.0;
+
+            circle = mMap.addCircle(new CircleOptions()
+                    .center(new LatLng(-34 + latOffset, 151 + lngOffset))
+                    .radius(250)
+                    .fillColor(Color.BLACK)
+                    .clickable(true));
+
+            circle.setClickable(true);
+            circle.setTag(i); //make a meaningful tag here
+        }
+
+        mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
+            @Override
+            public void onCircleClick(Circle circle) {
+                //do something with the tag here
+                int tag = (int) circle.getTag();
+
+                //send to location activity
+                Intent intent = new Intent(getActivity(), PhotoLocationActivity.class);
+                intent.putExtra("ex", tag);
+                startActivity(intent);
+            }
+        });
+
     }
 
     /**

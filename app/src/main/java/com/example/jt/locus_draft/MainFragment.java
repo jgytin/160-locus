@@ -38,6 +38,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
     private OnFragmentInteractionListener mListener;
 
+    private MapView mMapView;
     private GoogleMap mMap;
 
     public MainFragment() {
@@ -52,7 +53,12 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         // Add a marker in Sydney, Australia, and move the camera.
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+
+        float zoomLevel = 12.0f; //This goes up to 21
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, zoomLevel));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        mMap.getUiSettings().setZoomControlsEnabled( true );
     }
 
     /**
@@ -81,6 +87,8 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         /*SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);*/
+
+
     }
 
     @Override
@@ -90,9 +98,9 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         // code from https://stackoverflow.com/questions/16536414/how-to-use-mapview-in-android-using-google-map-v2?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
-        MapView map = v.findViewById(R.id.map);
-        map.onCreate(savedInstanceState);
-        map.getMapAsync(this);
+        mMapView = v.findViewById(R.id.map);
+        mMapView.onCreate(savedInstanceState);
+        mMapView.getMapAsync(this);
 
         return v;
     }
@@ -112,6 +120,14 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mMapView != null) {
+            mMapView.onResume();
         }
     }
 

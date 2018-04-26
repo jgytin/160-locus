@@ -47,6 +47,9 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     private MapView mMapView;
     private GoogleMap mMap;
 
+    private double berkeleyLat = 37.871826;
+    private double berkeleyLng = -122.259824;
+
     public MainFragment() {
         // Required empty public constructor
     }
@@ -56,13 +59,12 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney, Australia, and move the camera.
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        LatLng berkeley = new LatLng(berkeleyLat, berkeleyLng);
+//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 
-        float zoomLevel = 12.0f; //This goes up to 21
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, zoomLevel));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        float zoomLevel = 15.0f; //This goes up to 21
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(berkeley, zoomLevel));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(berkeley));
 
         mMap.getUiSettings().setZoomControlsEnabled( true );
 
@@ -74,12 +76,12 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
         Circle circle;
         for (int i = 0; i < 30; i++) {
-            double latOffset = ((double) ((rand.nextInt(1000) - 500))) / 10000.0;
-            double lngOffset = ((double) ((rand.nextInt(1000) - 500))) / 10000.0;
+            double latOffset = ((double) ((rand.nextInt(1000) - 500))) / 80000.0;
+            double lngOffset = ((double) ((rand.nextInt(1000) - 500))) / 80000.0;
 
             circle = mMap.addCircle(new CircleOptions()
-                    .center(new LatLng(-34 + latOffset, 151 + lngOffset))
-                    .radius(250)
+                    .center(new LatLng(berkeleyLat + latOffset, berkeleyLng + lngOffset))
+                    .radius(32)
                     .fillColor(Color.BLACK)
                     .clickable(true));
 

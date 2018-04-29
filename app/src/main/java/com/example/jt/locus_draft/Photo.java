@@ -6,8 +6,19 @@ package com.example.jt.locus_draft;
 
 public class Photo {
 
+    private String mImgUrl;
+
     public Photo() {
 
+    }
+
+    public Photo(String img) {
+        mImgUrl = img;
+        System.out.println(img);
+    }
+
+    public String getImgUrl() {
+        return mImgUrl;
     }
 
 }

@@ -10,6 +10,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.util.ArrayList;
 
 public class PhotoAdapter extends RecyclerView.Adapter {
@@ -67,6 +72,14 @@ class LandmarkViewHolder extends RecyclerView.ViewHolder {
     }
 
     void bind(Photo photo, Context context) {
-        //do nothing for now
+        //use firebase and bind photoview to the image url
+        // Reference to an image file in Firebase Storage
+        StorageReference pathReference = FirebaseStorage.getInstance().getReference().child(photo.getImgUrl());
+
+        // Load the image using Glide
+        Glide.with(context)
+                .using(new FirebaseImageLoader())
+                .load(pathReference)
+                .into(mPhotoView);
     }
 }

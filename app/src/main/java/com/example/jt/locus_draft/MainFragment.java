@@ -51,7 +51,6 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         // Required empty public constructor
     }
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -73,7 +72,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         Random rand = new Random();
 
         Circle circle;
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 3; i++) {
             double latOffset = ((double) ((rand.nextInt(1000) - 500))) / 10000.0;
             double lngOffset = ((double) ((rand.nextInt(1000) - 500))) / 10000.0;
 

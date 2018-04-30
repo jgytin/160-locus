@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1029657152599-o3a4k06p7s8eo52q0qrn8bods94ncgj6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.jt.locus_draft",
+            "certificate_hash": "4c4e6ed9bf62f3a2c901ff70bf3ee4bf7e19f06a"
+          }
+        },
+        {
           "client_id": "1029657152599-0jcpca18120clie4ipgls3puhftdsavt.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -5,6 +5,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.w3c.dom.Comment;
 
 import java.util.ArrayList;
 
@@ -14,27 +24,49 @@ public class PhotoLocationActivity extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private ArrayList<Photo> mPhotos = new ArrayList<Photo>(30);
 
+    private int mLocationNumber;
+
+    private DatabaseReference mLocRef;
+    private String mImgUrl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_location);
 
         Intent intent = getIntent();
-        getSupportActionBar().setTitle("Location " + intent.getIntExtra("ex", 0));
+        mLocationNumber = intent.getIntExtra("ex", 0);
+        getSupportActionBar().setTitle("Location " + mLocationNumber);
 
         mRecyclerView = findViewById(R.id.location_images);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
+        mLocRef = FirebaseDatabase.getInstance().getReference("locs").child(mLocationNumber +  "");
+        System.out.println(mLocRef);
+
         setPhotos();
         setAdapterAndUpdateData();
     }
 
-    // add some default photos for now
     private void setPhotos() {
-        for (int i = 0; i < 9; i++) {
-            mPhotos.add(new Photo());
-        }
+        System.out.println(mLocRef.child("img"));
+        //get photo url from locs/[#]/img
+        mLocRef.child("img").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //load the url into a new photo object to display
+                System.out.println(dataSnapshot.getValue(String.class));
+                mPhotos.add(new Photo(dataSnapshot.getValue(String.class)));
+                setAdapterAndUpdateData();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // don't worry about it
+            }
+        });
+
     }
 
     private void setAdapterAndUpdateData() {
@@ -42,8 +74,5 @@ public class PhotoLocationActivity extends AppCompatActivity {
         // this will "refresh" our recycler view
         mAdapter = new PhotoAdapter(this, mPhotos);
         mRecyclerView.setAdapter(mAdapter);
-
-        // scroll to the last comment
-        if (mPhotos.size() != 0) mRecyclerView.smoothScrollToPosition(mPhotos.size() - 1);
     }
 }

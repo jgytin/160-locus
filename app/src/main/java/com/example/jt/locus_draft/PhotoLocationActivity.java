@@ -52,28 +52,18 @@ public class PhotoLocationActivity extends AppCompatActivity {
     private void setPhotos() {
         System.out.println(mLocRef.child("img"));
         //get photo url from locs/[#]/img
-        mLocRef.child("img").addChildEventListener(new ChildEventListener() {
+        mLocRef.child("img").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 //load the url into a new photo object to display
+                System.out.println(dataSnapshot.getValue(String.class));
                 mPhotos.add(new Photo(dataSnapshot.getValue(String.class)));
                 setAdapterAndUpdateData();
             }
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-                //unsupported
-            }
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                //unsupported
-            }
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-                //unsupported
-            }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                //ignore
+                // don't worry about it
             }
         });
 

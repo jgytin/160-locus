@@ -43,20 +43,17 @@ public class PhotoLocationActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         mLocRef = FirebaseDatabase.getInstance().getReference("locs").child(mLocationNumber +  "");
-        System.out.println(mLocRef);
 
         setPhotos();
         setAdapterAndUpdateData();
     }
 
     private void setPhotos() {
-        System.out.println(mLocRef.child("img"));
         //get photo url from locs/[#]/img
         mLocRef.child("img").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //load the url into a new photo object to display
-                System.out.println(dataSnapshot.getValue(String.class));
                 mPhotos.add(new Photo(dataSnapshot.getValue(String.class)));
                 setAdapterAndUpdateData();
             }

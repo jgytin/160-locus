@@ -10,6 +10,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.w3c.dom.Comment;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,6 +35,10 @@ public class PhotoLocationActivity extends AppCompatActivity {
     private ImageButton saveButton;
 
     PhotoLoc pl;
+    private int mLocationNumber;
+
+    private DatabaseReference mLocRef;
+    private String mImgUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +56,8 @@ public class PhotoLocationActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         setupSaveButton();
+//        mLocRef = FirebaseDatabase.getInstance().getReference("locs").child(mLocationNumber +  "");
+
         setPhotos();
         setAdapterAndUpdateData();
     }
@@ -86,11 +101,22 @@ public class PhotoLocationActivity extends AppCompatActivity {
         });
     }
 
-    // add some default photos for now
     private void setPhotos() {
-        for (int i = 0; i < 3; i++) {
-            mPhotos.add(new Photo());
-        }
+        //get photo url from locs/[#]/img
+        mLocRef.child("img").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //load the url into a new photo object to display
+                mPhotos.add(new Photo(dataSnapshot.getValue(String.class)));
+                setAdapterAndUpdateData();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // don't worry about it
+            }
+        });
+
     }
 
     private void setAdapterAndUpdateData() {
@@ -98,8 +124,5 @@ public class PhotoLocationActivity extends AppCompatActivity {
         // this will "refresh" our recycler view
         mAdapter = new PhotoAdapter(this, mPhotos);
         mRecyclerView.setAdapter(mAdapter);
-
-        // scroll to the last comment
-        if (mPhotos.size() != 0) mRecyclerView.smoothScrollToPosition(mPhotos.size() - 1);
     }
 }

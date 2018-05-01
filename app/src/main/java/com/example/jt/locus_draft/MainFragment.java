@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +21,15 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 
@@ -54,7 +63,6 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         // Required empty public constructor
     }
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -66,30 +74,61 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(berkeley, zoomLevel));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(berkeley));
 
-        mMap.getUiSettings().setZoomControlsEnabled( true );
+        mMap.getUiSettings().setZoomControlsEnabled(true);
 
-        setTestPhotoLocs();
+        loadLocations();
+        setOnCircleClickListener();
     }
 
-    private void setTestPhotoLocs() {
-        Random rand = new Random();
+    private void loadLocations() {
+        DatabaseReference locsRef = FirebaseDatabase.getInstance().getReference().child("locs");
 
-        Circle circle;
-        for (int i = 0; i < 30; i++) {
-            double latOffset = ((double) ((rand.nextInt(1000) - 500))) / 80000.0;
-            double lngOffset = ((double) ((rand.nextInt(1000) - 500))) / 80000.0;
-            PhotoLoc pl = new PhotoLoc("pl"+i, berkeleyLat + latOffset, berkeleyLng + lngOffset, "filename"+i);
+        //get all locations from firebase
+        locsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                //get values of location from database
+                HashMap<String, String> locData = (HashMap<String, String>) dataSnapshot.getValue();
 
-            circle = mMap.addCircle(new CircleOptions()
-                    .center(new LatLng(pl.lat, pl.lng))
-                    .radius(32)
-                    .fillColor(Color.BLACK)
-                    .clickable(true));
+                //add circle at given latitude and longitude
+                double lat = Double.parseDouble(locData.get("lat"));
+                double lng = Double.parseDouble(locData.get("lng"));
 
-            circle.setClickable(true);
-            circle.setTag(pl); //make a meaningful tag here
-        }
+                PhotoLoc pl = new PhotoLoc(locData.get("name"), lat, lng, locData.get("img"));
 
+                Circle circle = mMap.addCircle(new CircleOptions()
+                        .center(new LatLng(lat, lng))
+                        .radius(32)
+                        .fillColor(Color.BLACK)
+                        .clickable(true));
+
+                circle.setClickable(true);
+                circle.setTag(pl); //make a meaningful tag here
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                //nothing
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                //nothing
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                //nothing
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //nothing
+            }
+        });
+    }
+
+    private void setOnCircleClickListener() {
         mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
             @Override
             public void onCircleClick(Circle circle) {
@@ -102,7 +141,6 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                 startActivity(intent);
             }
         });
-
     }
 
     /**

@@ -8,7 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 
@@ -28,7 +32,7 @@ public class PhotoAdapter extends RecyclerView.Adapter {
         // here, we specify what kind of view each cell should have. In our case, all of them will have a view
         // made from comment_cell_layout
         View view = LayoutInflater.from(mContext).inflate(R.layout.photo_layout, parent, false);
-        return new LandmarkViewHolder(view);
+        return new PhotoViewHolder(view);
     }
 
 
@@ -40,7 +44,7 @@ public class PhotoAdapter extends RecyclerView.Adapter {
         // every time the recycler view is refreshed, this method is called getItemCount() times (because
         // it needs to recreate every cell).
         Photo photo = mPhotos.get(position);
-        ((LandmarkViewHolder) holder).bind(photo, mContext);
+        ((PhotoViewHolder) holder).bind(photo, mContext);
     }
 
     // Return the size of your dataset (invoked by the layout manager)
@@ -51,14 +55,14 @@ public class PhotoAdapter extends RecyclerView.Adapter {
 
 }
 
-class LandmarkViewHolder extends RecyclerView.ViewHolder {
+class PhotoViewHolder extends RecyclerView.ViewHolder {
 
     // each data item is just a string in this case'
     public View mItemView;
     public LinearLayout mPhotoBubbleLayout;
     public ImageView mPhotoView;
 
-    public LandmarkViewHolder(View itemView) {
+    public PhotoViewHolder(View itemView) {
         super(itemView);
 
         mItemView = itemView;
@@ -67,6 +71,14 @@ class LandmarkViewHolder extends RecyclerView.ViewHolder {
     }
 
     void bind(Photo photo, Context context) {
-        //do nothing for now
+        //use firebase and bind photoview to the image url
+        // Reference to an image file in Firebase Storage
+        StorageReference pathReference = FirebaseStorage.getInstance().getReference().child(photo.getImgUrl());
+
+        // Load the image using Glide
+        Glide.with(context)
+                .using(new FirebaseImageLoader())
+                .load(pathReference)
+                .into(mPhotoView);
     }
 }

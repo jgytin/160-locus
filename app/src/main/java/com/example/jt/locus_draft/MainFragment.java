@@ -131,7 +131,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onCircleClick(Circle circle) {
                 //do something with the tag here
-                String tag = (String) circle.getTag();
+                int tag = Integer.parseInt((String) circle.getTag());
 
                 //send to location activity
                 Intent intent = new Intent(getActivity(), PhotoLocationActivity.class);

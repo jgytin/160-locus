@@ -14,7 +14,6 @@ public class Photo {
 
     public Photo(String img) {
         mImgUrl = img;
-        System.out.println(img);
     }
 
     public String getImgUrl() {

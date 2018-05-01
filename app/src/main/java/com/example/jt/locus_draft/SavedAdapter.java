@@ -1,6 +1,7 @@
 package com.example.jt.locus_draft;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +15,9 @@ public class SavedAdapter extends RecyclerView.Adapter {
 
     private RecyclerView mRecyclerView;
     private Context mContext;
-    private ArrayList<Saved> mSaved;
+    private ArrayList<PhotoLoc> mSaved;
 
-    public SavedAdapter(Context context, ArrayList<Saved> saved, RecyclerView rv) {
+    public SavedAdapter(Context context, ArrayList<PhotoLoc> saved, RecyclerView rv) {
         mContext = context;
         mSaved = saved;
         mRecyclerView = rv;
@@ -25,18 +26,16 @@ public class SavedAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.saved_cell_layout, parent, false);
-//        view.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                int index = mRecyclerView.getChildLayoutPosition(view);
-//                Saved saved = (Saved) mSaved.get(index);
-//                Intent gotoComments = new Intent(mContext, CommentFeedActivity.class);
-//                gotoComments.putExtra("index", index);
-//                gotoComments.putExtra("name", (String) hm.get("landmark_name"));
-//                gotoComments.putExtra("username", username);
-//                mContext.startActivity(gotoComments);
-//            }
-//        });
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int index = mRecyclerView.getChildLayoutPosition(view);
+                PhotoLoc pl = (PhotoLoc) mSaved.get(index);
+                Intent intent = new Intent(mContext, PhotoLocationActivity.class);
+                intent.putExtra("pl", pl);
+                mContext.startActivity(intent);
+            }
+        });
         return new SavedViewHolder(view);
     }
 
@@ -48,7 +47,7 @@ public class SavedAdapter extends RecyclerView.Adapter {
         // here, we the comment that should be displayed at index `position` in our recylcer view
         // everytime the recycler view is refreshed, this method is called getItemCount() times (because
         // it needs to recreate every cell).
-        Saved saved = (Saved) mSaved.get(position);
+        PhotoLoc saved = (PhotoLoc) mSaved.get(position);
         ((SavedViewHolder) holder).bind(saved);
     }
 
@@ -74,7 +73,7 @@ class SavedViewHolder extends RecyclerView.ViewHolder {
         mNameTextView = mSavedBubbleLayout.findViewById(R.id.saved_cell_name);
     }
 
-    void bind(Saved saved) {
+    void bind(PhotoLoc saved) {
 //        mImageView.setImageResource(R.drawable.strawberry_creek);
         mNameTextView.setText(saved.name);
     }

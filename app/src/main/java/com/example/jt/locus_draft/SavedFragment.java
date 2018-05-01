@@ -6,12 +6,17 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 
@@ -35,7 +40,7 @@ public class SavedFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
-    private ArrayList<Saved> mSaved;
+    private ArrayList<PhotoLoc> mSaved;
     private FrameLayout layout;
 
     private OnFragmentInteractionListener mListener;
@@ -83,10 +88,16 @@ public class SavedFragment extends Fragment {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mSaved = new ArrayList<Saved>();
-        mSaved.add(new Saved("saved place 1", "."));
-        mSaved.add(new Saved("saved place 2", "."));
-        mSaved.add(new Saved("ayee it works", "."));
+        FileInputStream fis = null;
+        ObjectInputStream ois = null;
+        try {
+            fis = this.getContext().openFileInput("saved.ser");
+            ois = new ObjectInputStream(fis);
+            mSaved = (ArrayList<PhotoLoc>) ois.readObject();
+            ois.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         mAdapter = new SavedAdapter(getActivity(), mSaved, mRecyclerView);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -131,17 +142,4 @@ public class SavedFragment extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-}
-
-
-class Saved {
-
-    public String name;
-    public String imagePath;
-
-    Saved(String name, String imagePath) {
-        this.name = name;
-        this.imagePath = imagePath;
-    }
-
 }

@@ -20,6 +20,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 
 public class MapActivity extends AppCompatActivity
@@ -68,6 +71,17 @@ public class MapActivity extends AppCompatActivity
         //set frame layout to map fragment
         getSupportFragmentManager().beginTransaction().add(R.id.frame_layout, MainFragment.newInstance()).commit();
 
+        String filename = "saved.ser";
+        FileOutputStream fos = null;
+        ObjectOutputStream oos = null;
+        try {
+            fos = openFileOutput(filename, Context.MODE_PRIVATE);
+            oos = new ObjectOutputStream(fos);
+            oos.writeObject(new ArrayList<PhotoLoc>());
+            oos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

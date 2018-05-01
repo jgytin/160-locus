@@ -68,36 +68,37 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
         mMap.getUiSettings().setZoomControlsEnabled( true );
 
-        setTestCircles();
+        setTestPhotoLocs();
     }
 
-    private void setTestCircles() {
+    private void setTestPhotoLocs() {
         Random rand = new Random();
 
         Circle circle;
         for (int i = 0; i < 30; i++) {
             double latOffset = ((double) ((rand.nextInt(1000) - 500))) / 80000.0;
             double lngOffset = ((double) ((rand.nextInt(1000) - 500))) / 80000.0;
+            PhotoLoc pl = new PhotoLoc("pl"+i, berkeleyLat + latOffset, berkeleyLng + lngOffset, "filename"+i);
 
             circle = mMap.addCircle(new CircleOptions()
-                    .center(new LatLng(berkeleyLat + latOffset, berkeleyLng + lngOffset))
+                    .center(new LatLng(pl.lat, pl.lng))
                     .radius(32)
                     .fillColor(Color.BLACK)
                     .clickable(true));
 
             circle.setClickable(true);
-            circle.setTag(i); //make a meaningful tag here
+            circle.setTag(pl); //make a meaningful tag here
         }
 
         mMap.setOnCircleClickListener(new GoogleMap.OnCircleClickListener() {
             @Override
             public void onCircleClick(Circle circle) {
                 //do something with the tag here
-                int tag = (int) circle.getTag();
+                PhotoLoc tag = (PhotoLoc) circle.getTag();
 
                 //send to location activity
                 Intent intent = new Intent(getActivity(), PhotoLocationActivity.class);
-                intent.putExtra("ex", tag);
+                intent.putExtra("pl", tag);
                 startActivity(intent);
             }
         });

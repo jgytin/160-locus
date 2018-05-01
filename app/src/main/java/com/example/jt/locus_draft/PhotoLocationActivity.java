@@ -47,6 +47,7 @@ public class PhotoLocationActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         pl = (PhotoLoc) intent.getSerializableExtra("pl");
+        mLocationNumber = intent.getIntExtra("ex", 0);
         getSupportActionBar().setTitle("Location " + pl.name);
 
         saveButton = findViewById(R.id.save_button);
@@ -56,7 +57,7 @@ public class PhotoLocationActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         setupSaveButton();
-//        mLocRef = FirebaseDatabase.getInstance().getReference("locs").child(mLocationNumber +  "");
+        mLocRef = FirebaseDatabase.getInstance().getReference("locs").child(pl.index +  "");
 
         setPhotos();
         setAdapterAndUpdateData();

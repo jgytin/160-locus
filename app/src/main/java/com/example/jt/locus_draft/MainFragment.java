@@ -94,7 +94,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                 double lat = Double.parseDouble(locData.get("lat"));
                 double lng = Double.parseDouble(locData.get("lng"));
 
-                PhotoLoc pl = new PhotoLoc(locData.get("name"), lat, lng, locData.get("img"));
+                PhotoLoc pl = new PhotoLoc(locData.get("name"), lat, lng, locData.get("img"), dataSnapshot.getKey());
 
                 Circle circle = mMap.addCircle(new CircleOptions()
                         .center(new LatLng(lat, lng))
@@ -133,11 +133,11 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onCircleClick(Circle circle) {
                 //do something with the tag here
-                PhotoLoc tag = (PhotoLoc) circle.getTag();
+                PhotoLoc pl = (PhotoLoc) circle.getTag();
 
                 //send to location activity
                 Intent intent = new Intent(getActivity(), PhotoLocationActivity.class);
-                intent.putExtra("pl", tag);
+                intent.putExtra("pl", pl);
                 startActivity(intent);
             }
         });

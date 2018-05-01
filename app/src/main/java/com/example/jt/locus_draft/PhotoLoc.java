@@ -12,12 +12,14 @@ public class PhotoLoc implements Serializable {
     double lat;
     double lng;
     String file;
+    String index;
 
-    public PhotoLoc(String name, double lat, double lng, String file) {
+    public PhotoLoc(String name, double lat, double lng, String file, String index) {
         this.name = name;
         this.lat = lat;
         this.lng = lng;
         this.file = file;
+        this.index = index;
     }
 
     @Override

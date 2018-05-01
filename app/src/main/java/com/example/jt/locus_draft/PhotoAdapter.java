@@ -29,8 +29,6 @@ public class PhotoAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // here, we specify what kind of view each cell should have. In our case, all of them will have a view
-        // made from comment_cell_layout
         View view = LayoutInflater.from(mContext).inflate(R.layout.photo_layout, parent, false);
         return new PhotoViewHolder(view);
     }
@@ -40,9 +38,6 @@ public class PhotoAdapter extends RecyclerView.Adapter {
     // - replace the contents of the view with that element
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        // here, we the comment that should be displayed at index `position` in our recycler view
-        // every time the recycler view is refreshed, this method is called getItemCount() times (because
-        // it needs to recreate every cell).
         Photo photo = mPhotos.get(position);
         ((PhotoViewHolder) holder).bind(photo, mContext);
     }

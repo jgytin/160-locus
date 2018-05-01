@@ -1,26 +1,16 @@
 package com.example.jt.locus_draft;
 
-import android.content.Context;
-import android.database.sqlite.SQLiteAccessPermException;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import android.support.v4.app.FragmentActivity;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-
 
 public class MapActivity extends AppCompatActivity
         implements MainFragment.OnFragmentInteractionListener,
@@ -28,6 +18,7 @@ public class MapActivity extends AppCompatActivity
         GridFragment.OnFragmentInteractionListener {
 
     private TextView mTextMessage;
+    private Location mCurrentLocation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -48,7 +39,7 @@ public class MapActivity extends AppCompatActivity
                     break;
                 case R.id.navigation_grid:
 //                    mTextMessage.setText(R.string.title_notifications);
-                    selectedFragment = GridFragment.newInstance();
+                    selectedFragment = GridFragment.newInstance(mCurrentLocation);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment).commit();
             }
 
@@ -70,9 +61,15 @@ public class MapActivity extends AppCompatActivity
 
     }
 
+    //receive the current location from map activity
     @Override
-    public void onFragmentInteraction(Uri uri){
-        //you can leave it empty
+    public void onLocationChange(Location location) {
+        mCurrentLocation = location;
     }
 
+    //get rid of this
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 }

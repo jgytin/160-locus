@@ -2,6 +2,7 @@ package com.example.jt.locus_draft;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteAccessPermException;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -31,6 +32,7 @@ public class MapActivity extends AppCompatActivity
         GridFragment.OnFragmentInteractionListener {
 
     private TextView mTextMessage;
+    private Location mCurrentLocation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -51,7 +53,7 @@ public class MapActivity extends AppCompatActivity
                     break;
                 case R.id.navigation_grid:
 //                    mTextMessage.setText(R.string.title_notifications);
-                    selectedFragment = GridFragment.newInstance();
+                    selectedFragment = GridFragment.newInstance(mCurrentLocation);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment).commit();
             }
 
@@ -82,6 +84,11 @@ public class MapActivity extends AppCompatActivity
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onLocationChange(Location location) {
+        mCurrentLocation = location;
     }
 
     @Override

@@ -1,16 +1,27 @@
 package com.example.jt.locus_draft;
 
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -24,6 +35,9 @@ import java.util.ArrayList;
 public class GridFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
+
+    private Location mLocation;
+    private DatabaseReference mLocsRef;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -40,8 +54,9 @@ public class GridFragment extends Fragment {
      * @return A new instance of fragment GridFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static GridFragment newInstance() {
+    public static GridFragment newInstance(Location location) {
         GridFragment fragment = new GridFragment();
+        fragment.mLocation = location;
         return fragment;
     }
 
@@ -61,8 +76,10 @@ public class GridFragment extends Fragment {
         mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
-        setPhotos();
-        setAdapterAndUpdateData();
+        //open firebase ref
+        mLocsRef = FirebaseDatabase.getInstance().getReference().child("locs");
+
+        setLocsRefListener();
 
         return v;
     }
@@ -106,20 +123,58 @@ public class GridFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    // add some default photos for now
-    private void setPhotos() {
-        for (int i = 0; i < 9; i++) {
-            mPhotos.add(new Photo());
-        }
+    private void setLocsRefListener() {
+        mLocsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                //get data for each location
+                HashMap<String, String> locData = (HashMap<String, String>) dataSnapshot.getValue(); //TODO change to custom location class
+
+                double lat = Double.parseDouble(locData.get("lat"));
+                double lng = Double.parseDouble(locData.get("lng"));
+                Location photoLoc = new Location(LocationManager.GPS_PROVIDER);
+                photoLoc.setLatitude(lat);
+                photoLoc.setLongitude(lng);
+
+                //add photo if location is within certain radius of current location
+//                System.out.println(photoLoc.distanceTo(mLocation));
+//                System.out.println(mLocation);
+//                System.out.println(photoLoc);
+//                System.out.println(locData.get("img"));
+//                Log.i("REEEEE", locData.get("name") + " " + photoLoc.distanceTo(mLocation));
+                if (photoLoc.distanceTo(mLocation) < 1000) {
+                    mPhotos.add(new Photo(locData.get("img")));
+//                    System.out.println(mPhotos);
+                    setAdapterAndUpdateData();
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                //nothing
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                //nothing
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                //nothing
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //nothing
+            }
+        });
     }
 
     private void setAdapterAndUpdateData() {
         // create a new adapter with the updated mPhotos array
         // this will "refresh" our recycler view
-        mAdapter = new PhotoAdapter(getActivity(), mPhotos);
+        mAdapter = new GridAdapter(getActivity(), mPhotos);
         mRecyclerView.setAdapter(mAdapter);
-
-        // scroll to the last comment
-        if (mPhotos.size() != 0) mRecyclerView.smoothScrollToPosition(mPhotos.size() - 1);
     }
 }

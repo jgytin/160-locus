@@ -52,6 +52,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
 
     private double berkeleyLat = 37.871826;
     private double berkeleyLng = -122.259824;
+    private Location berkeleyLoc;
 
     public MainFragment() {
         // Required empty public constructor
@@ -62,7 +63,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
 
         LatLng berkeley = new LatLng(berkeleyLat, berkeleyLng);
-        Location berkeleyLoc = new Location(LocationManager.GPS_PROVIDER);
+        berkeleyLoc = new Location(LocationManager.GPS_PROVIDER);
         berkeleyLoc.setLatitude(berkeleyLat);
         berkeleyLoc.setLongitude(berkeleyLng);
         mListener.onLocationChange(berkeleyLoc);
@@ -135,6 +136,8 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                 //send to location activity
                 Intent intent = new Intent(getActivity(), PhotoLocationActivity.class);
                 intent.putExtra("pl", pl);
+                intent.putExtra("lat", berkeleyLat);
+                intent.putExtra("lng", berkeleyLng);
                 startActivity(intent);
             }
         });

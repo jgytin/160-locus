@@ -2,6 +2,8 @@ package com.example.jt.locus_draft;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -9,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -28,13 +31,19 @@ import java.util.ArrayList;
 
 public class PhotoLocationActivity extends AppCompatActivity {
 
+    private final String SAVED_FILE = "saved.ser";
+
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private ArrayList<Photo> mPhotos = new ArrayList<Photo>(30);
 
+    private TextView mLocationName;
+    private TextView mDistance;
+
     private ImageButton saveButton;
 
-    PhotoLoc pl;
+    private PhotoLoc pl;
+    private Location curLoc;
     private int mLocationNumber;
 
     private DatabaseReference mLocRef;
@@ -47,6 +56,10 @@ public class PhotoLocationActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         pl = (PhotoLoc) intent.getSerializableExtra("pl");
+        curLoc = new Location(LocationManager.GPS_PROVIDER);
+        curLoc.setLatitude(intent.getDoubleExtra("lat", 0));
+        curLoc.setLongitude(intent.getDoubleExtra("lng", 0));
+
         mLocationNumber = intent.getIntExtra("ex", 0);
         getSupportActionBar().setTitle("Location " + pl.name);
 
@@ -55,8 +68,18 @@ public class PhotoLocationActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.location_images);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        mLocationName = findViewById(R.id.location_name);
+        mDistance = findViewById(R.id.distance);
+
+        mLocationName.setText(pl.name);
+        Location photoLoc = new Location(LocationManager.GPS_PROVIDER);
+        photoLoc.setLatitude(pl.lat);
+        photoLoc.setLongitude(pl.lng);
+        mDistance.setText(curLoc.distanceTo(photoLoc) + " meters away");
+
 
         setupSaveButton();
+
         mLocRef = FirebaseDatabase.getInstance().getReference("locs").child(pl.index +  "");
 
         setPhotos();
@@ -64,40 +87,62 @@ public class PhotoLocationActivity extends AppCompatActivity {
     }
 
     private void setupSaveButton() {
+        // update save button color
+        ArrayList<PhotoLoc> pls = new ArrayList<PhotoLoc>();
+
+        FileInputStream fis = null;
+        ObjectInputStream ois = null;
+        try {
+            fis = openFileInput(SAVED_FILE);
+            ois = new ObjectInputStream(fis);
+            pls.addAll((ArrayList<PhotoLoc>) ois.readObject());
+            ois.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (pls.contains(pl)) {
+            saveButton.setBackgroundTintList(getResources().getColorStateList(R.color.darkRed));
+        }
+        else {
+            saveButton.setBackgroundTintList(getResources().getColorStateList(R.color.mediumGray));
+        }
+
+
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String filename = "saved.ser";
+            ArrayList<PhotoLoc> pls = new ArrayList<PhotoLoc>();
 
-                ArrayList<PhotoLoc> pls = new ArrayList<PhotoLoc>();
+            FileInputStream fis = null;
+            ObjectInputStream ois = null;
+            try {
+                fis = openFileInput(SAVED_FILE);
+                ois = new ObjectInputStream(fis);
+                pls.addAll((ArrayList<PhotoLoc>) ois.readObject());
+                ois.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-                FileInputStream fis = null;
-                ObjectInputStream ois = null;
-                try {
-                    fis = openFileInput(filename);
-                    ois = new ObjectInputStream(fis);
-                    pls.addAll((ArrayList<PhotoLoc>) ois.readObject());
-                    ois.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            if (pls.contains(pl)) {
+                pls.remove(pl);
+                saveButton.setBackgroundTintList(getResources().getColorStateList(R.color.mediumGray));
+            }
+            else {
+                pls.add(pl);
+                saveButton.setBackgroundTintList(getResources().getColorStateList(R.color.darkRed));
+            }
 
-                if (pls.contains(pl)) {
-                    pls.remove(pl);
-                }
-                else {
-                    pls.add(pl);
-                }
-
-                FileOutputStream fos = null;
-                ObjectOutputStream oos = null;
-                try {
-                    fos = openFileOutput(filename, Context.MODE_PRIVATE);
-                    oos = new ObjectOutputStream(fos);
-                    oos.writeObject(pls);
-                    oos.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            FileOutputStream fos = null;
+            ObjectOutputStream oos = null;
+            try {
+                fos = openFileOutput(SAVED_FILE, Context.MODE_PRIVATE);
+                oos = new ObjectOutputStream(fos);
+                oos.writeObject(pls);
+                oos.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             }
         });
     }

@@ -9,6 +9,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.firebase.ui.storage.images.FirebaseImageLoader;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 import java.util.ArrayList;
 
 public class SavedAdapter extends RecyclerView.Adapter {
@@ -74,7 +80,13 @@ class SavedViewHolder extends RecyclerView.ViewHolder {
     }
 
     void bind(PhotoLoc saved) {
-//        mImageView.setImageResource(R.drawable.strawberry_creek);
         mNameTextView.setText(saved.name);
+        StorageReference pathReference = FirebaseStorage.getInstance().getReference().child(saved.file);
+
+        // Load the image using Glide
+        Glide.with(mSavedBubbleLayout.getContext())
+            .using(new FirebaseImageLoader())
+            .load(pathReference)
+            .into(mImageView);
     }
 }

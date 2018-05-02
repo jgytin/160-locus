@@ -81,7 +81,8 @@ class SavedViewHolder extends RecyclerView.ViewHolder {
 
     void bind(PhotoLoc saved) {
         mNameTextView.setText(saved.name);
-        StorageReference pathReference = FirebaseStorage.getInstance().getReference().child(saved.file);
+        String img = saved.file.split(",")[0];
+        StorageReference pathReference = FirebaseStorage.getInstance().getReference().child(img);
 
         // Load the image using Glide
         Glide.with(mSavedBubbleLayout.getContext())

@@ -143,8 +143,9 @@ public class GridFragment extends Fragment {
 //                System.out.println(locData.get("img"));
 //                Log.i("REEEEE", locData.get("name") + " " + photoLoc.distanceTo(mLocation));
                 if (photoLoc.distanceTo(mLocation) < 1000) {
-                    mPhotos.add(new Photo(locData.get("img")));
-//                    System.out.println(mPhotos);
+                    for (String img: locData.get("img").split(",")) {
+                        mPhotos.add(new Photo(img));
+                    }
                     setAdapterAndUpdateData();
                 }
             }

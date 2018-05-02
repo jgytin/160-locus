@@ -153,7 +153,9 @@ public class PhotoLocationActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //load the url into a new photo object to display
-                mPhotos.add(new Photo(dataSnapshot.getValue(String.class)));
+                for (String img: dataSnapshot.getValue(String.class).split(",")) {
+                    mPhotos.add(new Photo(img));
+                }
                 setAdapterAndUpdateData();
             }
 

@@ -1,25 +1,15 @@
 package com.example.jt.locus_draft;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteAccessPermException;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
-
-import android.support.v4.app.FragmentActivity;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -42,12 +32,10 @@ public class MapActivity extends AppCompatActivity
             Fragment selectedFragment;
             switch (item.getItemId()) {
                 case R.id.navigation_map:
-//                    mTextMessage.setText(R.string.title_home);
                     selectedFragment = MainFragment.newInstance();
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment).commit();
                     break;
                 case R.id.navigation_saved:
-//                    mTextMessage.setText(R.string.title_dashboard);
                     selectedFragment = SavedFragment.newInstance("a", "b");
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment).commit();
                     break;
@@ -96,4 +84,8 @@ public class MapActivity extends AppCompatActivity
         //you can leave it empty
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 }

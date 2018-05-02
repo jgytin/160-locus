@@ -10,6 +10,7 @@
         android:layout_height="match_parent" />
 
     <SearchView
+        android:id="@+id/search"
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:layout_margin="16dp"

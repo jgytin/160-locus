@@ -5,34 +5,35 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 
 /**
@@ -53,6 +54,8 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     private double berkeleyLat = 37.871826;
     private double berkeleyLng = -122.259824;
     private Location berkeleyLoc;
+
+    private SearchView mSearchBar;
 
     public MainFragment() {
         // Required empty public constructor
@@ -143,6 +146,50 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
+    private void setSearchOnClickListener() {
+        mSearchBar.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                try {
+                    System.out.println("here");
+                    Intent intent =
+                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                                    .build(getActivity());
+                    startActivityForResult(intent, 1);
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    e.printStackTrace();
+                } catch (GooglePlayServicesRepairableException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void changeLocation(Place place) {
+        //move map to new location
+        System.out.println(place);
+        LatLng newLoc = place.getLatLng();
+        float zoomLevel = 15.0f; //This goes up to 21
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLoc, zoomLevel));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(newLoc));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                // give the place back to the running fragment (must be map fragment)
+                Place place = PlaceAutocomplete.getPlace(getActivity(), data);
+                changeLocation(place);
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                //ignore
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
+    }
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -150,12 +197,8 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
      * @return A new instance of fragment MapFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MainFragment newInstance(/*String param1, String param2*/) {
+    public static MainFragment newInstance() {
         MainFragment fragment = new MainFragment();
-        /*Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);*/
         return fragment;
     }
 
@@ -174,6 +217,10 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         mMapView = v.findViewById(R.id.map);
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
+
+        //set up search bar
+        mSearchBar = v.findViewById(R.id.search);
+        setSearchOnClickListener();
 
         return v;
     }

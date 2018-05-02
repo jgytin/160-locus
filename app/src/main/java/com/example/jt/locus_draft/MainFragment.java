@@ -51,9 +51,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     private MapView mMapView;
     private GoogleMap mMap;
 
-    private double berkeleyLat = 37.871826;
-    private double berkeleyLng = -122.259824;
-    private Location berkeleyLoc;
+    private Location mLocation;
 
     private SearchView mSearchBar;
 
@@ -65,11 +63,7 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        LatLng berkeley = new LatLng(berkeleyLat, berkeleyLng);
-        berkeleyLoc = new Location(LocationManager.GPS_PROVIDER);
-        berkeleyLoc.setLatitude(berkeleyLat);
-        berkeleyLoc.setLongitude(berkeleyLng);
-        mListener.onLocationChange(berkeleyLoc);
+        LatLng berkeley = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
 
         float zoomLevel = 15.0f; //This goes up to 21
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(berkeley, zoomLevel));
@@ -139,8 +133,8 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
                 //send to location activity
                 Intent intent = new Intent(getActivity(), PhotoLocationActivity.class);
                 intent.putExtra("pl", pl);
-                intent.putExtra("lat", berkeleyLat);
-                intent.putExtra("lng", berkeleyLng);
+                intent.putExtra("lat", mLocation.getLatitude());
+                intent.putExtra("lng", mLocation.getLongitude());
                 startActivity(intent);
             }
         });
@@ -173,6 +167,16 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
         float zoomLevel = 15.0f; //This goes up to 21
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLoc, zoomLevel));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(newLoc));
+
+        //send new location to parent activity for grid view
+        sendLocationToParent(newLoc);
+    }
+
+    private void sendLocationToParent(LatLng latLng) {
+        Location loc = new Location(LocationManager.GPS_PROVIDER);
+        loc.setLatitude(latLng.latitude);
+        loc.setLongitude(latLng.longitude);
+        mListener.onLocationChange(loc);
     }
 
     @Override
@@ -196,10 +200,14 @@ public class MainFragment extends Fragment implements OnMapReadyCallback {
      *
      * @return A new instance of fragment MapFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static MainFragment newInstance() {
+    public static MainFragment newInstance(Location loc) {
         MainFragment fragment = new MainFragment();
+        fragment.setLocation(loc);
         return fragment;
+    }
+
+    private void setLocation(Location loc) {
+        mLocation = loc;
     }
 
     @Override

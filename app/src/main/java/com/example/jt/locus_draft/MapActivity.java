@@ -2,6 +2,7 @@ package com.example.jt.locus_draft;
 
 import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,6 +25,9 @@ public class MapActivity extends AppCompatActivity
     private TextView mTextMessage;
     private Location mCurrentLocation;
 
+    private double berkeleyLat = 37.871826;
+    private double berkeleyLng = -122.259824;
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -32,7 +36,7 @@ public class MapActivity extends AppCompatActivity
             Fragment selectedFragment;
             switch (item.getItemId()) {
                 case R.id.navigation_map:
-                    selectedFragment = MainFragment.newInstance();
+                    selectedFragment = MainFragment.newInstance(mCurrentLocation);
                     getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment).commit();
                     break;
                 case R.id.navigation_saved:
@@ -58,9 +62,6 @@ public class MapActivity extends AppCompatActivity
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        //set frame layout to map fragment
-        getSupportFragmentManager().beginTransaction().add(R.id.frame_layout, MainFragment.newInstance()).commit();
-
         String filename = "saved.ser";
         FileOutputStream fos = null;
         ObjectOutputStream oos = null;
@@ -72,6 +73,18 @@ public class MapActivity extends AppCompatActivity
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        //set default location for
+        setDefaultLocation();
+
+        //set frame layout to map fragment
+        getSupportFragmentManager().beginTransaction().add(R.id.frame_layout, MainFragment.newInstance(mCurrentLocation)).commit();
+    }
+
+    private void setDefaultLocation() {
+        mCurrentLocation = new Location(LocationManager.GPS_PROVIDER);
+        mCurrentLocation.setLatitude(berkeleyLat);
+        mCurrentLocation.setLongitude(berkeleyLng);
     }
 
     @Override

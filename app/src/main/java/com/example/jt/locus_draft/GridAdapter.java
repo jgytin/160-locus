@@ -56,15 +56,11 @@ public class GridAdapter extends RecyclerView.Adapter {
             mItemView = itemView;
             mPhotoBubbleLayout = mItemView.findViewById(R.id.photo_cell_layout);
             mPhotoView = mPhotoBubbleLayout.findViewById(R.id.photo);
-            System.out.println(mPhotoBubbleLayout);
-            System.out.println(mPhotoView);
         }
 
         public void bind(Photo photo, Context context) {
             //use firebase and bind photoview to the image url
             // Reference to an image file in Firebase Storage
-//            System.out.println(photo.getImgUrl());
-//            System.out.println(this);
             StorageReference pathReference = FirebaseStorage.getInstance().getReference().child(photo.getImgUrl());
 
             // Load the image using Glide

@@ -135,11 +135,10 @@ public class GridFragment extends Fragment {
                 photoLoc.setLongitude(lng);
 
                 //add photo if location is within certain radius of current location
-//                System.out.println(photoLoc.distanceTo(mLocation));
-//                System.out.println(mLocation);
-//                System.out.println(photoLoc);
-//                System.out.println(locData.get("img"));
-//                Log.i("REEEEE", locData.get("name") + " " + photoLoc.distanceTo(mLocation));
+                System.out.println(photoLoc.distanceTo(mLocation));
+                System.out.println(mLocation);
+                System.out.println(photoLoc);
+                System.out.println(locData.get("img"));
                 if (photoLoc.distanceTo(mLocation) < 1000) {
                     for (String img: locData.get("img").split(",")) {
                         mPhotos.add(new Photo(img));

@@ -1,24 +1,19 @@
 package com.example.jt.locus_draft;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteAccessPermException;
+import android.content.Intent;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import android.support.v4.app.FragmentActivity;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -40,19 +35,16 @@ public class MapActivity extends AppCompatActivity
             Fragment selectedFragment;
             switch (item.getItemId()) {
                 case R.id.navigation_map:
-//                    mTextMessage.setText(R.string.title_home);
                     selectedFragment = MainFragment.newInstance();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment, "MAP").commit();
                     break;
                 case R.id.navigation_saved:
-//                    mTextMessage.setText(R.string.title_dashboard);
                     selectedFragment = SavedFragment.newInstance("a", "b");
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment, "SAVED").commit();
                     break;
                 case R.id.navigation_grid:
-//                    mTextMessage.setText(R.string.title_notifications);
                     selectedFragment = GridFragment.newInstance();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, selectedFragment, "GRID").commit();
             }
 
             return false;
@@ -89,4 +81,10 @@ public class MapActivity extends AppCompatActivity
         //you can leave it empty
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        System.out.println(getFragmentManager().getFragments());
+    }
 }
